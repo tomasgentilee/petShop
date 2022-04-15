@@ -17,12 +17,12 @@ Vue.createApp({
     },
 
     created() {
-        this.URLAPI = "https://apipetshop.herokuapp.com/api/articulos"
-        fetch(this.URLAPI)
+        URLAPI = "https://apipetshop.herokuapp.com/api/articulos"
+        fetch(URLAPI)
             .then(response => response.json())
-            .then(data => {
+                .then(data => {
                 this.productos = data.response
-
+                
                 this.stockProductosEnStorage = JSON.parse(localStorage.getItem("favs"))
                 if(this.stockProductosEnStorage){
                     this.storageCarrito = this.stockProductosEnStorage
@@ -32,6 +32,7 @@ Vue.createApp({
                 this.medFiltrados = this.medicamentos
                 this.juguetesFiltrados = this.juguetes
             })
+            .catch(err => console.log(err))
     },
 
     computed: {
@@ -49,13 +50,23 @@ Vue.createApp({
                 this.juguetesFiltrados = this.juguetes
             }
         },
-        totalDeTotales(){
+        total(){
+            let traerProductos = JSON.parse(localStorage.getItem("favs"))
+            console.log(traerProductos)
+            let sumaAux = 0;
+            if(traerProductos.length > 1){
+                traerProductos.map(prod => sumaAux += (prod.precio * prod.cantidad))
+            }
+            console.log(sumaAux)
+            return sumaAux
+        },
+        /* totalDeTotales(){
                 let suma = 0;
                 for(key in this.storageCarrito){
                     suma = suma + (this.storageCarrito[key].cantidad * this.storageCarrito[key].precio)
                 }
                 return suma
-            }, 
+            },  */
     },
         
     methods: {
@@ -117,12 +128,6 @@ Vue.createApp({
             localScopyFiltered.push(localSFilterToModify[0])
             localStorage.clear()
             localStorage.setItem("favs", JSON.stringify(localScopyFiltered))
-        },
-        total(med){
-            let input = document.getElementById(`${med._id}`)
-            let parrafo = document.getElementById(`${med.imagen}`)
-            let total = input.value * med.precio
-            parrafo.innerHTML=`Precio total $${total}`
         },
     },
 

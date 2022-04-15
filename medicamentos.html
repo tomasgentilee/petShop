@@ -58,9 +58,9 @@
               <p class="card-text">{{medicamento.descripcion}}</p>
               <h5>Precio unitario ${{medicamento.precio}}</h5>
               <div class="number">
-                <button class="minus" v-on:click="restarProductoCarrito(medicamento), total(medicamento)">-</button>
+                <button class="minus" v-on:click="restarProductoCarrito(medicamento)">-</button>
                 <input type="text" :id="medicamento._id" value= 1 />
-                <button class="plus" v-on:click="sumarProductoCarrito(medicamento), total(medicamento)">+</button>
+                <button class="plus" v-on:click="sumarProductoCarrito(medicamento)">+</button>
                 <p :id="medicamento.imagen"></p>
               </div>
             </div>
@@ -69,8 +69,8 @@
       </div>
     </div>
   </div>
-  {{totalDeTotales}}
-  
+  <!-- {{totalDeTotales}} -->
+  {{total}}
 
     
 
