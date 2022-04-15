@@ -29,7 +29,6 @@ Vue.createApp({
                 }
                 
                 this.filtro()
-                console.log(this.productos)
                 this.medFiltrados = this.medicamentos
                 this.juguetesFiltrados = this.juguetes
             })
@@ -50,15 +49,15 @@ Vue.createApp({
                 this.juguetesFiltrados = this.juguetes
             }
         },
-        totalDEtotales(){
-            for(key in this.storageCarrito){
-                suma = suma + (this.storageCarrito[key].cantidad * this.storageCarrito[key].precio)
-                console.log(suma)
-            }
-        },
+        totalDeTotales(){
+                let suma = 0;
+                for(key in this.storageCarrito){
+                    suma = suma + (this.storageCarrito[key].cantidad * this.storageCarrito[key].precio)
+                }
+                return suma
+            }, 
     },
-
-
+        
     methods: {
         filtro() {
             this.productos.forEach(producto => {
@@ -76,44 +75,54 @@ Vue.createApp({
             });
         },
         agregarCarrito(producto) {
-            this.productosID = this.storageCarrito.map(producto => producto._id)
-
+            this.productosID = this.storageCarrito.map(producto => producto._id)     
             if (!this.productosID.includes(producto._id)) {
+                producto.cantidad = 1
                 this.storageCarrito.push(producto)
-
                 localStorage.setItem("favs", JSON.stringify(this.storageCarrito))
-
+                
                 console.log(this.storageCarrito)
             }
         },
         removerCarrito(producto) {
             this.storageCarrito = this.stockProductosEnStorage
             this.stockProductosEnStorage = this.stockProductosEnStorage.filter(prod => prod._id !== producto._id)
+            
             localStorage.setItem("favs", JSON.stringify(this.stockProductosEnStorage))
         },
         sumarProductoCarrito(med) {
             let input = document.getElementById(`${med._id}`)
-
+            let localS = JSON.parse(localStorage.getItem("favs"))
+            let localSCopy = [...localS]
+            let localSFilterToModify = localS.filter(product => product._id == med._id)
             if (input.value < med.stock) {
-                input.value++
+                ++input.value
+                localSFilterToModify[0].cantidad = input.value
             }
-
-            console.log(input.value)
+            let localScopyFiltered = localSCopy.filter(prod => prod._id != med._id)
+            localScopyFiltered.push(localSFilterToModify[0])
+            localStorage.clear()
+            localStorage.setItem("favs", JSON.stringify(localScopyFiltered))
         },
         restarProductoCarrito(med){
             let input = document.getElementById(`${med._id}`)
-
+            let localS = JSON.parse(localStorage.getItem("favs"))
+            let localSCopy = [...localS]
+            let localSFilterToModify = localS.filter(product => product._id == med._id)
             if (input.value > 0) {
-                input.value--
+                --input.value
+                localSFilterToModify[0].cantidad = input.value
             }
-            console.log(input.value)
+            let localScopyFiltered = localSCopy.filter(prod => prod._id != med._id)
+            localScopyFiltered.push(localSFilterToModify[0])
+            localStorage.clear()
+            localStorage.setItem("favs", JSON.stringify(localScopyFiltered))
         },
         total(med){
             let input = document.getElementById(`${med._id}`)
             let parrafo = document.getElementById(`${med.imagen}`)
             let total = input.value * med.precio
             parrafo.innerHTML=`Precio total $${total}`
-            console.log(parrafo)
         },
     },
 
