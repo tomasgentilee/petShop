@@ -32,7 +32,7 @@ Vue.createApp({
                 this.contadorCantidadProductosCarrito()
                 this.filtro()
             })
-            .catch(err => console.log(err))
+            .catch(err => console.error(err))
     },
 
     computed: {
@@ -68,8 +68,6 @@ Vue.createApp({
                 producto.cantidad = 1
                 this.storageCarrito.push(producto)
                 localStorage.setItem("favs", JSON.stringify(this.storageCarrito))
-
-                console.log(this.storageCarrito)
             }
         },
         removerCarrito(producto) {
@@ -108,24 +106,46 @@ Vue.createApp({
         },
         contadorCantidadProductosCarrito() {
             let localS = JSON.parse(localStorage.getItem("favs"))
-            let spanCarrito = document.getElementById("spanCarrito")
-            let almacenDeCantidad = 0
-            localS.forEach(producto => {
-                almacenDeCantidad += Number(producto.cantidad)
-            });
-            console.log(almacenDeCantidad)
-            spanCarrito.innerHTML=`${almacenDeCantidad}`
+            if(localS != null) {
+                let spanCarrito = document.getElementById("spanCarrito")
+                let almacenDeCantidad = 0
+                localS.forEach(producto => {
+                    almacenDeCantidad += Number(producto.cantidad)
+                });
+                spanCarrito.innerHTML=`${almacenDeCantidad}`
+            }
         },
         total() {
             let traerProductos = JSON.parse(localStorage.getItem("favs"))
             let sumaAux = 0;
-            if (traerProductos.length > 0) {
+            if (traerProductos != null) {
                 traerProductos.map(prod => sumaAux += (prod.precio * prod.cantidad))
                 let divTotal = document.getElementById("totalFinal")
-                divTotal.innerHTML=`
-                <h3>El total de su compra es: $${sumaAux}</h3>`
+                divTotal.innerHTML=`<h3>El total de su compra es: $${sumaAux}</h3>`
+            }
+            else {
+                console.log("vacio")
             }
         },
+        comprar() {
+            let traerProductos = JSON.parse(localStorage.getItem("favs"))
+            traerProductos.map(product =>{
+                let med = this.medicamentos.findIndex(element => element._id === product._id)                
+                let jug = this.juguetes.findIndex(element => element._id === product._id)
+
+                if(med != -1){
+                    this.medicamentos[med].stock -= Number(product.cantidad)
+                }
+                else if(jug != -1) {
+                    this.juguetes[jug].stock -= Number(product.cantidad)
+                }
+            })
+            localStorage.clear()
+            this.storageCarrito = []
+            let spanCarrito = document.getElementById("spanCarrito")
+            spanCarrito.innerHTML=``
+            window.alert("Gracias por su compra")
+        }
     },
 
 }).mount("#app")
